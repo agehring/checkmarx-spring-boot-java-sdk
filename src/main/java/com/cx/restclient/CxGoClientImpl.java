@@ -11,8 +11,9 @@ import com.checkmarx.sdk.dto.cx.xml.CxXMLResultsType;
 import com.checkmarx.sdk.dto.filtering.FilterConfiguration;
 import com.checkmarx.sdk.dto.od.*;
 import com.checkmarx.sdk.exception.CheckmarxException;
-import com.checkmarx.sdk.service.CxAuthClient;
+
 import com.checkmarx.sdk.service.CxClient;
+import com.checkmarx.sdk.service.CxGoAuthService;
 import com.checkmarx.sdk.service.CxRepoFileService;
 import com.cx.restclient.ast.dto.sca.report.Finding;
 import com.cx.restclient.ast.dto.sca.report.Package;
@@ -94,12 +95,12 @@ public class CxGoClientImpl implements CxClient {
     private static List<CxScanParams> scanProbeMap = new LinkedList<>();
 
     private final CxGoProperties goProperties;
-    private final CxAuthClient authClient;
+    private final CxGoAuthService authClient;
     private final RestTemplate restTemplate;
     private Map<String, Object> codeCache = new HashMap<>();
     private CxRepoFileService cxRepoFileService;
 
-    public CxGoClientImpl(CxGoProperties cxProperties, CxAuthClient authClient,
+    public CxGoClientImpl(CxGoProperties cxProperties, CxGoAuthService authClient,
                      @Qualifier("cxRestTemplate") RestTemplate restTemplate) {
         this.goProperties = cxProperties;
         this.authClient = authClient;

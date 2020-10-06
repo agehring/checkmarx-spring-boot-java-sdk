@@ -111,12 +111,12 @@ public class CxService implements CxClient{
     public static final String ERROR_PROCESSING_SCAN_RESULTS = "Error while processing scan results";
     private final CxProperties cxProperties;
     private final CxLegacyService cxLegacyService;
-    private final CxAuthClient authClient;
+    private final CxAuthService authClient;
     private final RestTemplate restTemplate;
     private final ScanSettingsClient scanSettingsClient;
     private final FilterValidator filterValidator;
 
-    public CxService(CxAuthClient authClient,
+    public CxService(CxAuthService authClient,
                      CxProperties cxProperties,
                      CxLegacyService cxLegacyService,
                      @Qualifier("cxRestTemplate") RestTemplate restTemplate,

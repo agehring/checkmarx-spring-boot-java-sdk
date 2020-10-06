@@ -1,9 +1,13 @@
-package com.checkmarx.sdk.service;
+package com.checkmarx.sdk.service.cxsast;
 
 import com.checkmarx.sdk.config.CxConfig;
 import com.checkmarx.sdk.config.CxProperties;
 import com.checkmarx.sdk.dto.ScanResults;
 import com.checkmarx.sdk.exception.CheckmarxException;
+import com.checkmarx.sdk.service.CxAuthClient;
+import com.checkmarx.sdk.service.CxAuthService;
+import com.checkmarx.sdk.service.CxLegacyService;
+import com.checkmarx.sdk.service.CxService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +40,7 @@ public class CxServiceTest {
     @MockBean
     private CxLegacyService cxLegacyService;
     @MockBean
-    private CxAuthClient authClient;
+    private CxAuthService authClient;
     @Qualifier("cxRestTemplate")
     @MockBean
     private RestTemplate restTemplate;
