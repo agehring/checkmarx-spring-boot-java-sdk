@@ -67,7 +67,8 @@ public class CxGoServiceIT {
             String teamId = service.getTeamId(properties.getTeam());
             Integer projId = service.getProjectId(teamId, "CircleCI");
             if(projId == -1){
-                projId = service.createProject(teamId, "CircleCI");
+                String projIdStr = service.createCxGoProject(teamId, "CircleCI", "1,2,3,4,5,9");
+                projId = Integer.parseInt(projIdStr);
             }
             assertNotNull(projId);
         }catch (CheckmarxException e){
@@ -90,6 +91,21 @@ public class CxGoServiceIT {
         }
     }
 
+//    @Test
+//    public void getResults(){
+//        Login();
+//        FilterConfiguration filterConfiguration = FilterConfiguration.builder()
+//                .simpleFilters(Collections.singletonList(new Filter(Filter.Type.SEVERITY, "High")))
+//                .build();
+//        //generate the results
+//        try {
+//            ScanResults results = service.getReportContentByScanId(92, filterConfiguration);
+//        } catch (CheckmarxException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+    
     @Test
     public void CompleteScanFlow() {
         try {
