@@ -66,15 +66,6 @@ public interface CxClient extends ScannerClient {
      */
     Integer getReportStatus(Integer reportId) throws CheckmarxException;
 
-    /**
-     * Retrieve the report by scanId, mapped to ScanResults DTO, applying filtering as requested
-     *
-     * @param scanId
-     * @param filter
-     * @return Contents of the current report
-     * @throws CheckmarxException
-     */
-    public ScanResults getReportContentByScanId(Integer scanId, FilterConfiguration filter) throws CheckmarxException;
 
     /**
      * Retrieve the report by reportId, mapped to ScanResults DTO, applying filtering as requested
@@ -230,22 +221,10 @@ public interface CxClient extends ScannerClient {
 
     CxScanSettings getScanSettingsDto(int projectId);
 
-    /**
-     * Get Preset Name based on Id
-     *
-     * @param presetId
-     * @return preset associated with the current scan
-     */
-    public String getPresetName(Integer presetId);
 
 
-    /**
-     * Get Preset Id of an existing project
-     *
-     * @param projectId
-     * @return preset associated with the current scan
-     */
-    public Integer getProjectPresetId(Integer projectId);
+
+
 
     /**
      * Set Repository details for a project
@@ -421,15 +400,15 @@ public interface CxClient extends ScannerClient {
      */
     public String createTeamWS(String parentTeamId, String teamName) throws CheckmarxException;
 
-    /**
-     * Create team under given parentId - Will use REST API to create team for version 9.0+
-     *
-     * @param parentTeamId
-     * @param teamName
-     * @return new TeamId
-     * @throws CheckmarxException
-     */
-    public String createTeam(String parentTeamId, String teamName) throws CheckmarxException;
+//    /**
+//     * Create team under given parentId - Will use REST API to create team for version 9.0+
+//     *
+//     * @param parentTeamId
+//     * @param teamName
+//     * @return new TeamId
+//     * @throws CheckmarxException
+//     */
+//    public String createTeam(String parentTeamId, String teamName) throws CheckmarxException;
 
     /**
      * Move team to under given newParentId - Will use REST API to create team for version 9.0+
@@ -484,10 +463,10 @@ public interface CxClient extends ScannerClient {
      */
     public Integer getScanConfiguration(String configuration) throws CheckmarxException;
 
-    /**
-     * Get scan configuration name by Id.
-     */
-    String getScanConfigurationName(int configurationId);
+//    /**
+//     * Get scan configuration name by Id.
+//     */
+//    String getScanConfigurationName(int configurationId);
 
     /**
      * Fetch the Id of a given preset name
