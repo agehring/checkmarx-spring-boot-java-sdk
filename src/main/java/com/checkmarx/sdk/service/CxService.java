@@ -2,6 +2,7 @@ package com.checkmarx.sdk.service;
 
 import com.checkmarx.sdk.config.Constants;
 import com.checkmarx.sdk.config.CxProperties;
+import com.checkmarx.sdk.config.CxPropertiesBase;
 import com.checkmarx.sdk.dto.Filter;
 import com.checkmarx.sdk.dto.ScanResults;
 import com.checkmarx.sdk.dto.cx.*;
@@ -2272,5 +2273,10 @@ public class CxService implements CxClient{
         }catch (HttpStatusCodeException e){
             throw new CheckmarxException("HTTP Error".concat(ExceptionUtils.getRootCauseMessage(e)));
         }
+    }
+
+    @Override
+    public CxPropertiesBase getCxPropertiesBase() {
+        return cxProperties;
     }
 }
