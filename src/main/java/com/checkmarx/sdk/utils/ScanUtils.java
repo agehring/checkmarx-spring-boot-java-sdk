@@ -3,6 +3,7 @@ package com.checkmarx.sdk.utils;
 import com.checkmarx.sdk.dto.CxConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -147,5 +148,12 @@ public class ScanUtils {
             log.warn("Error parsing CxConfig file: {}", ExceptionUtils.getRootCauseMessage(e));
         }
         return cxConfig;
+    }
+
+    public static String getBranchFromRef(String ref){
+        // refs/head/master (get 2nd position of /
+        int index = StringUtils.ordinalIndexOf(ref, "/", 2);
+        if(index < 0) return ref;
+        return ref.substring(index+1);
     }
 }

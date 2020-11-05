@@ -3,12 +3,16 @@ package com.cx.restclient;
 import com.checkmarx.sdk.config.Constants;
 import com.checkmarx.sdk.config.CxGoProperties;
 import com.checkmarx.sdk.config.CxPropertiesBase;
+import com.checkmarx.sdk.config.ScaConfig;
 import com.checkmarx.sdk.dto.Filter;
 import com.checkmarx.sdk.dto.ScanResults;
+import com.checkmarx.sdk.dto.ast.ASTResultsWrapper;
 import com.checkmarx.sdk.dto.ast.SCAResults;
+import com.checkmarx.sdk.dto.ast.ScanParams;
 import com.checkmarx.sdk.dto.ast.Summary;
 import com.checkmarx.sdk.dto.cx.*;
 
+import com.checkmarx.sdk.dto.filtering.EngineFilterConfiguration;
 import com.checkmarx.sdk.dto.filtering.FilterConfiguration;
 import com.checkmarx.sdk.dto.cxgo.*;
 import com.checkmarx.sdk.dto.filtering.FilterInputGo;
@@ -19,6 +23,8 @@ import com.checkmarx.sdk.exception.CheckmarxRuntimeException;
 import com.checkmarx.sdk.service.CxGoAuthService;
 import com.checkmarx.sdk.service.CxRepoFileService;
 import com.checkmarx.sdk.service.FilterValidatorGo;
+import com.checkmarx.sdk.service.ScaFilterFactory;
+import com.checkmarx.sdk.utils.ScanUtils;
 import com.cx.restclient.ast.dto.sca.report.Finding;
 import com.cx.restclient.ast.dto.sca.report.Package;
 import com.cx.restclient.dto.scansummary.Severity;
@@ -45,10 +51,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import java.time.LocalDateTime;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 /**
  * Class used to orchestrate submitting scans and retrieving results
@@ -76,6 +79,7 @@ public class CxGoClientImpl implements ScannerClient {
     private static final String DEEP_LINK = "/scan/business-unit/%s/application/%s/project/%s/scans/%s";
     private static final String SCA_DEEP_LINK = "/scan/business-unit/%s/application/%s/project/%s";
     private static final String ADDITIONAL_DETAILS_KEY = "results";
+    private static final String DEFAULT_BRANCH_MAIN = "main";
 
     /// CxOD required extra information for API calls not used by the SAST SDK. This
     /// data structure is used to capture that information as CxService calls are made
@@ -100,14 +104,16 @@ public class CxGoClientImpl implements ScannerClient {
     private Map<String, Object> codeCache = new HashMap<>();
     private CxRepoFileService cxRepoFileService;
     private final FilterValidatorGo filterValidator;
+    private final ScaFilterFactory filterFactory;
 
     public CxGoClientImpl(CxGoProperties cxProperties, CxGoAuthService authClient,
-                     @Qualifier("cxRestTemplate") RestTemplate restTemplate,
-					  FilterValidatorGo filterValidator) {
+                          @Qualifier("cxRestTemplate") RestTemplate restTemplate,
+                          FilterValidatorGo filterValidator, ScaFilterFactory filterFactory) {
         this.cxGoProperties = cxProperties;
         this.authClient = authClient;
         this.restTemplate = restTemplate;
 		this.filterValidator = filterValidator;
+        this.filterFactory = filterFactory;
     }
 
     @Override
@@ -195,6 +201,7 @@ public class CxGoClientImpl implements ScannerClient {
         return requestBody.toString();
     }
 
+
     @Override
     public Integer createScan(CxScanParams params, String comment) throws CheckmarxException {
         //
@@ -206,11 +213,18 @@ public class CxGoClientImpl implements ScannerClient {
             if (projectID.equals(UNKNOWN_INT)) {
                 projectID = Integer.parseInt(createCxGoProject(appID, params.getProjectName(), params.getScanPreset()));
             }
+            String branchName = DEFAULT_BRANCH_MAIN;
+            if(!ScanUtils.empty(params.getBranch())) {
+                branchName = ScanUtils.getBranchFromRef(params.getBranch());
+            }
+
+            log.info("using branch: '{}' ", branchName);
             params.setProjectId(projectID);
             /// Create the scan
             CreateScan scan = CreateScan.builder()
                     .projectId(params.getProjectId())
                     .engineTypes(cxGoProperties.getEngineTypes())
+                    .branch(branchName)
                     .build();
             log.info("Sending scan to CxGo for projectID {}.", params.getProjectId());
 
@@ -247,6 +261,15 @@ public class CxGoClientImpl implements ScannerClient {
             log.error("Null Exception: {}", ExceptionUtils.getRootCauseMessage(e), e);
             throw new CheckmarxException("NullPointerException occurred");
         }
+    }
+
+    private FilterConfiguration addScaFilters(ScanParams scanParams, FilterConfiguration originalFilters) {
+        ScaConfig scaConfig = Optional.ofNullable(scanParams).map(ScanParams::getScaConfig).orElse(null);
+        EngineFilterConfiguration filters = filterFactory.getFilterConfiguration(scaConfig);
+
+        originalFilters.setScaFilters(filters);
+
+        return originalFilters;
     }
 
     /**

@@ -8,10 +8,13 @@ public class CreateScan {
     public Integer projectId;
     @JsonProperty("engine_types")
     public List<String> engineTypes;
+    @JsonProperty("branch")
+    public String branch;
 
-    CreateScan(Integer projectId, List<String> engineTypes) {
+    CreateScan(Integer projectId, List<String> engineTypes, String branch) {
         this.projectId = projectId;
         this.engineTypes = engineTypes;
+        this.branch = branch;
     }
 
     public static OdScanBuilder builder() {
@@ -38,9 +41,20 @@ public class CreateScan {
         this.engineTypes = engineTypes;
     }
 
+    @JsonProperty("branch")
+    public String getBranch() {
+        return branch;
+    }
+
+    @JsonProperty("branch")
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
     public static class OdScanBuilder {
         private Integer projectId;
         private List<String> engineTypes;
+        private String branch;
 
         OdScanBuilder() {
         }
@@ -55,8 +69,13 @@ public class CreateScan {
             return this;
         }
 
+        public OdScanBuilder branch(String branch) {
+            this.branch = branch;
+            return this;
+        }
+
         public CreateScan build() {
-            return new CreateScan(projectId, engineTypes);
+            return new CreateScan(projectId, engineTypes, branch);
         }
     }
 }
