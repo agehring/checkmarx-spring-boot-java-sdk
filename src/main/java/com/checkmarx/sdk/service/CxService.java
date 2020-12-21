@@ -1625,7 +1625,7 @@ public class CxService implements CxClient{
                 .build();
 
         HttpHeaders headers = authClient.createAuthHeaders();
-        headers.add("cxOrigin","CxFlow");
+        headers.add("cxOrigin","CxFlow-AG");
         HttpEntity<CxScan> requestEntity = new HttpEntity<>(scan, headers);
 
         log.info("Creating Scan for project Id {}", projectId);
